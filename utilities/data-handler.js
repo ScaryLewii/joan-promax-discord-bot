@@ -1,4 +1,6 @@
 const fs = require( 'fs' );
+const dotenv   = require( 'dotenv' );
+dotenv.config();
 
 const axios = require( 'axios' );
 const $     = require( 'cheerio' );
@@ -10,13 +12,15 @@ const DataHandler = async () => {
 	await axios.get( url )
 		.then( ( html ) => {
 			$( '.wp-block-table table tbody tr', html.data ).each( ( i, el ) => {
-				// console.log(el.children[2].children[0]);
+				// console.log(el.children[0].children[0]);
 				let QnA = { 
-					question: el.children[1].children[0].data,
-					answer  : el.children[2] ? el.children[2].children[0] ? el.children[2].children[0].data : '' : ''
+					question: el.children[0].children[0].data,
+					answer  : el.children[1] ? el.children[1].children[0] ? el.children[1].children[0].data : '' : ''
 				}
 
-				lyceum.push( QnA );
+				if ( el.children[0].children[0].data ) {
+					lyceum.push( QnA );
+				}
 			} )
 		} )
 		.then( () => {
@@ -26,6 +30,7 @@ const DataHandler = async () => {
 
 			fs.writeFileSync( './data/lyceum.json', JSON.stringify( uniqueArray ) )
 		} )
+		.then( () => console.log( 'Questions and Answers updated!!!' ) )
 		.catch( ( err ) => {
 			console.log( err );
 		} );
