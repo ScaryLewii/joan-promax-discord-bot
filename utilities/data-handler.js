@@ -4,21 +4,23 @@ dotenv.config();
 
 const axios = require( 'axios' );
 const $     = require( 'cheerio' );
-const url   = `${ process.env.FETCH_URL_VIE }`;
+const url   = `${ process.env.FETCH_URL }`;
 
 const lyceum = [];
+const dataSelector = '.ninja_table_wrapper table tbody tr';
 
 const DataHandler = async () => {
 	await axios.get( url )
 		.then( ( html ) => {
-			$( '.wp-block-table table tbody tr', html.data ).each( ( i, el ) => {
-				// console.log(el.children[0].children[0]);
+			$( dataSelector, html.data ).each( ( i, el ) => {
+				// console.log(el.children[1]);
+				// console.log(el.children[0]?.children[0]?.data);
 				let QnA = { 
-					question: el.children[0].children[0].data,
-					answer  : el.children[1] ? el.children[1].children[0] ? el.children[1].children[0].data : '' : ''
+					question: el.children[1]?.children[0]?.data,
+					answer  : el.children[2]?.children[0] ? el.children[2].children[0].data : ''
 				}
 
-				if ( el.children[0].children[0].data ) {
+				if ( el.children[1].children[0]?.data ) {
 					lyceum.push( QnA );
 				}
 			} )

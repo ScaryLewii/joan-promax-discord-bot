@@ -1,7 +1,8 @@
 require('dotenv').config();
+
 const { Client, GatewayIntentBits } = require('discord.js');
 const { DataHandler } = require( './utilities/data-handler' );
-
+const { findAnswer } = require('./utilities/helper');
 
 const client = new Client({ intents: [
 		GatewayIntentBits.Guilds,
@@ -18,10 +19,18 @@ client.on('ready', () => {
 client.login( process.env.CLIENT_TOKEN );
 
 client.on('messageCreate', msg => {
-	switch ( msg.content ) {
-		case 'hi':
-			msg.reply(`Hello ${msg.author.username}. \nJoan ProMax's at your services.`);
-		case 'update-qa':
-			DataHandler();
+	if (msg.content === "hi") {
+		msg.reply(`Joan ProMax's at your services.`);
+		return;
+	}
+
+	if (msg.content === "update-qa") {
+		DataHandler();
+		return
+	}
+
+	if (msg.content.includes("..")) {
+		msg.reply(findAnswer(msg.content));
+		return
 	}
 });
